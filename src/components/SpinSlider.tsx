@@ -1,12 +1,20 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from "react";
 
-import { SpinSliderProps } from '../types';
-import { useSwipe } from '../hooks/useSwipe';
-import { getRenderRange, getNextIndex, getPreviousIndex } from '../utils/carousel';
-import { SpinSliderWrapper, SpinSliderTrack, SpinSliderButton } from '../styles';
+import { SpinSliderProps } from "../types";
+import { useSwipe } from "../hooks/useSwipe";
+import {
+  getRenderRange,
+  getNextIndex,
+  getPreviousIndex,
+} from "../utils/carousel";
+import {
+  SpinSliderWrapper,
+  SpinSliderTrack,
+  SpinSliderButton,
+} from "../styles";
 
-import { SpinSliderPagination } from './SpinSliderPagination';
-import { SpinSliderItem } from './SpinSliderItem';
+import { SpinSliderPagination } from "./SpinSliderPagination";
+import { SpinSliderItem } from "./SpinSliderItem";
 
 /**
  * 메인 SpinSlider 컴포넌트
@@ -40,8 +48,8 @@ export const SpinSlider = <T,>({
     };
 
     updateViewportWidth();
-    window.addEventListener('resize', updateViewportWidth);
-    return () => window.removeEventListener('resize', updateViewportWidth);
+    window.addEventListener("resize", updateViewportWidth);
+    return () => window.removeEventListener("resize", updateViewportWidth);
   }, []);
 
   // 자동 재생
@@ -50,7 +58,9 @@ export const SpinSlider = <T,>({
 
     const startAutoPlay = () => {
       autoPlayRef.current = setInterval(() => {
-        setCurrentIndex(prev => getNextIndex(prev, visibleCount, items.length, infinite));
+        setCurrentIndex((prev) =>
+          getNextIndex(prev, visibleCount, items.length, infinite)
+        );
       }, autoPlayInterval);
       callbacks?.onAutoPlayStart?.();
     };
@@ -66,29 +76,49 @@ export const SpinSlider = <T,>({
     startAutoPlay();
 
     return stopAutoPlay;
-  }, [autoPlay, autoPlayInterval, items.length, visibleCount, infinite, callbacks]);
+  }, [
+    autoPlay,
+    autoPlayInterval,
+    items.length,
+    visibleCount,
+    infinite,
+    callbacks,
+  ]);
 
-  // 계산된 값들
-  const visibleAreaWidth = useMemo(() => viewportWidth - sidePeek * 2, [viewportWidth, sidePeek]);
-  const itemWidth = useMemo(() => visibleAreaWidth / visibleCount, [visibleAreaWidth, visibleCount]);
-  const translateX = useMemo(() => -(itemWidth * currentIndex) + sidePeek, [itemWidth, currentIndex, sidePeek]);
-
+  const itemWidth = useMemo(
+    () => viewportWidth / visibleCount,
+    [viewportWidth, visibleCount]
+  );
+  const translateX = useMemo(
+    () => -(itemWidth * currentIndex),
+    [itemWidth, currentIndex]
+  );
   const totalItems = items.length;
 
   const { startIndex, endIndex } = useMemo(
     () => getRenderRange(currentIndex, visibleCount, totalItems),
-    [currentIndex, visibleCount, totalItems],
+    [currentIndex, visibleCount, totalItems]
   );
 
   // 네비게이션 핸들러
   const goToPrevious = () => {
-    const newIndex = getPreviousIndex(currentIndex, visibleCount, totalItems, infinite);
+    const newIndex = getPreviousIndex(
+      currentIndex,
+      visibleCount,
+      totalItems,
+      infinite
+    );
     setCurrentIndex(newIndex);
     callbacks?.onSlideChange?.(newIndex);
   };
 
   const goToNext = () => {
-    const newIndex = getNextIndex(currentIndex, visibleCount, totalItems, infinite);
+    const newIndex = getNextIndex(
+      currentIndex,
+      visibleCount,
+      totalItems,
+      infinite
+    );
     setCurrentIndex(newIndex);
     callbacks?.onSlideChange?.(newIndex);
   };
@@ -134,10 +164,10 @@ export const SpinSlider = <T,>({
       onMouseLeave={handleMouseLeave}
       onKeyDown={handleKeyDown}
       tabIndex={isMouseDown ? -1 : 0}
-      userSelect={isMouseDown ? 'none' : undefined}
+      userSelect={isMouseDown ? "none" : undefined}
       role="region"
       aria-roledescription="carousel"
-      aria-label={accessibility?.label || '슬라이더'}
+      aria-label={accessibility?.label || "슬라이더"}
     >
       {showNavigation && (
         <>
@@ -145,7 +175,7 @@ export const SpinSlider = <T,>({
             $position="left"
             $styles={styles}
             onClick={goToPrevious}
-            aria-label={accessibility?.previousButtonLabel || '이전 슬라이드'}
+            aria-label={accessibility?.previousButtonLabel || "이전 슬라이드"}
           >
             &#8249;
           </SpinSliderButton>
@@ -153,15 +183,20 @@ export const SpinSlider = <T,>({
             $position="right"
             $styles={styles}
             onClick={goToNext}
-            aria-label={accessibility?.nextButtonLabel || '다음 슬라이드'}
+            aria-label={accessibility?.nextButtonLabel || "다음 슬라이드"}
           >
             &#8250;
           </SpinSliderButton>
         </>
       )}
 
-      <SpinSliderTrack $translateX={translateX} $transitionDuration={transitionDuration}>
-        {startIndex > 0 && <li style={{ width: startIndex * itemWidth, flexShrink: 0 }} />}
+      <SpinSliderTrack
+        $translateX={translateX}
+        $transitionDuration={transitionDuration}
+      >
+        {startIndex > 0 && (
+          <li style={{ width: startIndex * itemWidth, flexShrink: 0 }} />
+        )}
         {items.slice(startIndex, endIndex).map((item, i) => {
           const index = startIndex + i;
           return (
@@ -179,7 +214,14 @@ export const SpinSlider = <T,>({
             />
           );
         })}
-        {endIndex < totalItems && <li style={{ width: (totalItems - endIndex) * itemWidth, flexShrink: 0 }} />}
+        {endIndex < totalItems && (
+          <li
+            style={{
+              width: (totalItems - endIndex) * itemWidth,
+              flexShrink: 0,
+            }}
+          />
+        )}
       </SpinSliderTrack>
 
       {showPagination && (
