@@ -39,7 +39,7 @@ export const SpinSlider = <T,>({
 }: SpinSliderProps<T>) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [viewportWidth, setViewportWidth] = useState(0);
-  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+  const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // 뷰포트 너비 계산
   useEffect(() => {
